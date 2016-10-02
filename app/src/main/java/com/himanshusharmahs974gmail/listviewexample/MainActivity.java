@@ -18,150 +18,116 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-private Button mascbutton,mdescbutton;
-    private ListView mNameListView;
-    private List<String> stringList;
-    private ArrayAdapter stringAdapter;
+public class MainActivity extends Activity implements OnClickListener {
 
+    private Button mAscButton;
+    private Button mDescButton;
+    private ListView mNameListView;
+   
+    private List<String> stringList;
+    private StringAdapter stringAdapter;
+   
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sort_list);
-        mascbutton=(Button)findViewById(R.id.asc_button);
-        mdescbutton=(Button)findViewById(R.id.desc_button);
-        mNameListView=(ListView)findViewById(R.id.name_list);
-
-        stringList=new ArrayList<String>();
-        stringList.add("POKEMON");
-        stringList.add("Pikachu");
-        stringList.add("rhychu");
-        stringList.add("charmendous");
-        stringList.add("bulbasore");
-        stringList.add("jiglipuff");
-        stringList.add("squaltle");
-        stringList.add("Ash");
-        stringAdapter=new ArrayAdapter<String>(this,R.layout.sort_list_item,stringList);
+       
+        mAscButton = (Button) findViewById(R.id.asc_button);
+        mDescButton = (Button) findViewById(R.id.desc_button);
+        mNameListView = (ListView) findViewById(R.id.name_list);
+       
+        stringList = new ArrayList<String>();
+        stringList.add("Rajesh");
+        stringList.add("Ramanan");
+        stringList.add("Kannan");
+        stringList.add("Mahesh");
+        stringList.add("Moses");
+        stringList.add("Kuberan");
+       
+        stringAdapter = new StringAdapter(MainActivity.this, R.layout.sort_list_item, stringList);
         mNameListView.setAdapter(stringAdapter);
-        mascbutton.setOnClickListener(this);
-        mdescbutton.setOnClickListener(this);
-
-
-
-
+       
+        mAscButton.setOnClickListener(this);
+        mDescButton.setOnClickListener(this);
+       
+       
     }
+    // Comparator for Ascending Order
+    public static Comparator<String> StringAscComparator = new Comparator<String>() {
 
-public static Comparator<String> StringAscComparator=new Comparator<String>() {
-    @Override
-    public int compare(String t1, String t2) {
-       String stringName1=t1;
-        String stringName2=t2;
+        public int compare(String app1, String app2) {
 
+            String stringName1 = app1;
+            String stringName2 = app2;
+           
+            return stringName1.compareToIgnoreCase(stringName2);
+        }
+    };
 
-        return stringName1.compareToIgnoreCase(stringName2);
-    }
-};
-public static Comparator<String> StringDescComparator=new Comparator<String>() {
-    @Override
-    public int compare(String s, String t1) {
-        String stringName1=s;
-        String stringName2=t1;
-        return stringName2.compareToIgnoreCase(stringName1);
+    //Comparator for Descending Order
+    public static Comparator<String> StringDescComparator = new Comparator<String>() {
 
+        public int compare(String app1, String app2) {
 
-    }
-};
-private class StringAdapter extends ArrayAdapter<String>{
-    private List<String> strModel;
-    public StringAdapter(Context context,int textViewResourceId,    List<String> strModel){
+            String stringName1 = app1;
+            String stringName2 = app2;
+           
+            return stringName2.compareToIgnoreCase(stringName1);
+        }
+    };
+   // Your Own Custom Adapter
+    private class StringAdapter extends ArrayAdapter<String> {
+        // Attributes
+        private List<String> strModel;
 
-
-      super(context,textViewResourceId,strModel);
-        this.strModel=strModel;
-
-    }
-    public View getView(int position , View converView, ViewGroup parent){
-        View view=converView;
-        SurfaceHolder holder=null;
-        if ( view==null){
-            view=View.inflate(MainActivity.this,R.layout.sort_list_item,null);
-            holder=new SurfaceHolder() {
-                @Override
-                public void addCallback(Callback callback) {
-
-                }
-
-                @Override
-                public void removeCallback(Callback callback) {
-
-                }
-
-                @Override
-                public boolean isCreating() {
-                    return false;
-                }
-
-                @Override
-                public void setType(int i) {
-
-                }
-
-                @Override
-                public void setFixedSize(int i, int i1) {
-
-                }
-
-                @Override
-                public void setSizeFromLayout() {
-
-                }
-
-                @Override
-                public void setFormat(int i) {
-
-                }
-
-                @Override
-                public void setKeepScreenOn(boolean b) {
-
-                }
-
-                @Override
-                public Canvas lockCanvas() {
-                    return null;
-                }
-
-                @Override
-                public Canvas lockCanvas(Rect rect) {
-                    return null;
-                }
-
-                @Override
-                public void unlockCanvasAndPost(Canvas canvas) {
-
-                }
-
-                @Override
-                public Rect getSurfaceFrame() {
-                    return null;
-                }
-
-                @Override
-                public Surface getSurface() {
-                    return null;
-                }
-            }
-
-
+        public StringAdapter(Context context, int textViewResourceId,
+                List<String> strModel) {
+            super(context, textViewResourceId, strModel);
+            this.strModel = strModel;
         }
 
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            Holder holder = null;
 
+            if (view == null) {
+                view = View.inflate(MainActivity.this,
+                        R.layout.sort_list_item, null);
+
+                holder = new Holder();
+                holder.StringNameTextView = (TextView) view
+                        .findViewById(R.id.name_text_view);
+
+                view.setTag(holder);
+            } else {
+                holder = (Holder) view.getTag();
+            }
+            String nameText=strModel.get(position);
+            holder.StringNameTextView.setText(nameText);
+            return view;
+        }
+    }
+   
+    static class Holder
+    {
+        private TextView StringNameTextView;
     }
 
+    @Override
+    public void onClick(View v) {
 
-}
-
-
-
-
+        switch(v.getId()) {
+        case R.id.asc_button :
+            Collections.sort(stringList, StringAscComparator);
+            Toast.makeText(MainActivity.this, "Sorting in Ascending Order", Toast.LENGTH_LONG).show();
+            break;
+        case R.id.desc_button :
+            Collections.sort(stringList, StringDescComparator);
+            Toast.makeText(MainActivity.this, "Sorting in Descending Order", Toast.LENGTH_LONG).show();
+            break;
+        }
+        stringAdapter.notifyDataSetChanged();
+       
+    }
 }
